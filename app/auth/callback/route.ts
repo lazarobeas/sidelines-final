@@ -3,19 +3,19 @@ import {NextRequest, NextResponse} from "next/server";
 import {createClient} from "@/utils/supabase/server";
 import {createServiceRoleClient} from "@/utils/supabase/service-role";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { body } = req;
-    console.log('Callback received:', body);
-
-    // Handle the callback logic here
-
-    res.status(200).json({ message: 'Callback received' });
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
-}
+// export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+//   if (req.method === 'POST') {
+//     const { body } = req;
+//     console.log('Callback received:', body);
+//
+//     // Handle the callback logic here
+//
+//     res.status(200).json({ message: 'Callback received' });
+//   } else {
+//     res.setHeader('Allow', ['POST']);
+//     res.status(405).end(`Method ${req.method} Not Allowed`);
+//   }
+// }
 
 // GET request to verify the code and grant user a profile into the database
 export async function GET(request: NextRequest){
