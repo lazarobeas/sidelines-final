@@ -26,7 +26,7 @@ export default function SignIn() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-                </div;>
+                </div>
                 <div>
                     <label htmlFor="password">Password:</label>
                     <input
