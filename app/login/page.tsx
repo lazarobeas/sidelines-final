@@ -4,26 +4,15 @@ import { redirect } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import EmailAuth from "@/app/login/components/emailAuth";
 
-interface UrlMessageCode {
-    error?: string;
-    message?: string;
-}
-
-interface LoginPageProps {
-    searchParams?: {
-        error?: string;
-        message?: string;
-    };
-}
-
+// Define proper Next.js App Router page props
 export default async function LoginPage({
-                                            searchParams = {},
-                                        }: LoginPageProps): Promise<React.ReactNode> {
-    // Convert searchParams to our UrlMessageCode type
-    const urlMessageCode: UrlMessageCode = {
-        error: searchParams?.error,
-        message: searchParams?.message
-    };
+                                            searchParams
+                                        }: {
+    searchParams?: { [key: string]: string | string[] | undefined }
+}): Promise<React.ReactNode> {
+    // Extract error and message from searchParams
+    const error = searchParams?.error as string | undefined;
+    const message = searchParams?.message as string | undefined;
 
     // Creating connection to supabase server client
     const supabase = await createClient();
@@ -47,22 +36,22 @@ export default async function LoginPage({
                     </CardDescription>
 
                     {/* Show error message if present in URL */}
-                    {urlMessageCode?.error ? (
+                    {error ? (
                         <div className="p-3 bg-red-100 text-red-800 rounded text-sm">
-                            {urlMessageCode.error === 'auth_failed'
+                            {error === 'auth_failed'
                                 ? 'Authentication failed. Please try again.'
-                                : urlMessageCode.error === 'profile_failed'
+                                : error === 'profile_failed'
                                     ? 'Failed to update profile. Please try again.'
-                                    : urlMessageCode.error === 'no_code'
+                                    : error === 'no_code'
                                         ? 'Please use the sign in form below.'
-                                        : urlMessageCode.error}
+                                        : error}
                         </div>
                     ) : null}
 
                     {/* Show success message if present in URL */}
-                    {urlMessageCode?.message ? (
+                    {message ? (
                         <div className="p-3 bg-green-100 text-green-800 rounded text-sm">
-                            {urlMessageCode.message}
+                            {message}
                         </div>
                     ) : null}
                 </CardHeader>
