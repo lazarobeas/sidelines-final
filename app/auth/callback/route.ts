@@ -15,6 +15,8 @@ import {createServiceRoleClient} from "@/utils/supabase/service-role";
 //     res.status(405).end(`Method ${req.method} Not Allowed`);
 //   }
 // }
+export const dynamic = 'force-dynamic'
+
 
 // GET request to verify the code and grant user a profile into the database
 export async function GET(request: NextRequest){
@@ -59,7 +61,7 @@ export async function GET(request: NextRequest){
         const {error: profileError} = await serviceRole
             .from('Users')
             .insert({
-              id: user.id,
+              user_id: user.id,
               email: user.email || '',
             })
 
