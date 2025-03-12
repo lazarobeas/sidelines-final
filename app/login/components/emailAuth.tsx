@@ -44,7 +44,7 @@ export default function EmailAuth(): React.JSX.Element {
         setError(null);
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
@@ -60,9 +60,6 @@ export default function EmailAuth(): React.JSX.Element {
         }
     };
 
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -75,10 +72,6 @@ export default function EmailAuth(): React.JSX.Element {
                 password,
                 options: {
                     emailRedirectTo: `${window.location.origin}/auth/callback`,
-                    data: {
-                        first_name: firstName,
-                        last_name: lastName
-                    }
                 }
             });
 
