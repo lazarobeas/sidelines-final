@@ -3,7 +3,6 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import EmailAuth from "@/app/login/components/emailAuth";
-import { Metadata } from 'next';
 
 // Correct way to type Next.js App Router page component props
 export default async function LoginPage({
