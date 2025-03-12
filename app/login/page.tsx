@@ -9,11 +9,21 @@ interface UrlMessageCode {
     message?: string;
 }
 
+interface LoginPageProps {
+    searchParams?: {
+        error?: string;
+        message?: string;
+    };
+}
+
 export default async function LoginPage({
-                                            urlMessageCode = {},
-                                        }: {
-    urlMessageCode?: UrlMessageCode;
-} = {}): Promise<React.ReactNode> {
+                                            searchParams = {},
+                                        }: LoginPageProps): Promise<React.ReactNode> {
+    // Convert searchParams to our UrlMessageCode type
+    const urlMessageCode: UrlMessageCode = {
+        error: searchParams?.error,
+        message: searchParams?.message
+    };
 
     // Creating connection to supabase server client
     const supabase = await createClient();
