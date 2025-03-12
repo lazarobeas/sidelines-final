@@ -3,17 +3,16 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import EmailAuth from "@/app/login/components/emailAuth";
+import { Metadata } from 'next';
 
-// Define proper Next.js App Router page props
+// Correct way to type Next.js App Router page component props
 export default async function LoginPage({
-                                            searchParams
+                                            params,
+                                            searchParams,
                                         }: {
-    searchParams?: { [key: string]: string | string[] | undefined }
+    params: Record<string, never>;
+    searchParams: Record<string, string | string[] | undefined>;
 }): Promise<React.ReactNode> {
-    // Extract error and message from searchParams
-    const error = searchParams?.error as string | undefined;
-    const message = searchParams?.message as string | undefined;
-
     // Creating connection to supabase server client
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
@@ -34,26 +33,6 @@ export default async function LoginPage({
                     <CardDescription className="text-base text-gray-600">
                         Sign in to become part of the growing sports community!
                     </CardDescription>
-
-                    {/* Show error message if present in URL */}
-                    {error ? (
-                        <div className="p-3 bg-red-100 text-red-800 rounded text-sm">
-                            {error === 'auth_failed'
-                                ? 'Authentication failed. Please try again.'
-                                : error === 'profile_failed'
-                                    ? 'Failed to update profile. Please try again.'
-                                    : error === 'no_code'
-                                        ? 'Please use the sign in form below.'
-                                        : error}
-                        </div>
-                    ) : null}
-
-                    {/* Show success message if present in URL */}
-                    {message ? (
-                        <div className="p-3 bg-green-100 text-green-800 rounded text-sm">
-                            {message}
-                        </div>
-                    ) : null}
                 </CardHeader>
                 <EmailAuth />
             </Card>
