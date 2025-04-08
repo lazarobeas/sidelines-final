@@ -51,6 +51,11 @@ export default {
   				'5': 'hsl(var(--chart-5))'
   			}
   		},
+		backgroundColor: {
+			'main-blue': '#23263E',
+			'secondary-blue': '#1A336D',
+			'triple-blue': '#2199FD'
+		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

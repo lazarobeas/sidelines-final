@@ -1,13 +1,20 @@
+import Header from "@/components/landing/header";
+import HeroSection from "@/components/landing/heroSection";
+import LiveScoresSection from "@/components/landing/liveScoresSection";
+import FeaturesSection from "@/components/landing/featuresSection";
+import CTASection from "@/components/landing/ctaSection";
+import Footer from "@/components/landing/footer";
+
 
 export default function LandingPage() {
     return (
-        <body>
-        <div className="container">
-            <h1>SIDELINES</h1>
-            <p className="subtitle">We&apos;re Not Ready Yet!</p>
-            <p className="description">Stay tuned for something amazing. Check back soon!</p>
-            <button className="join-button">Join the waitlist!</button>
+        <div className="min-h-screen bg-gray-50 text-gray-900">
+            <Header />
+            <HeroSection />
+            <LiveScoresSection />
+            <FeaturesSection />
+            <CTASection />
+            <Footer />
         </div>
-        </body>
-    )
+    );
 }
