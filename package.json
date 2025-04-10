@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -52,5 +52,21 @@
     "ts-jest": "^29.3.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(ts|tsx)$": ["babel-jest", {
+        "presets": [
+          ["@babel/preset-env", {"targets": {"node": "current"}}],
+          "@babel/preset-react",
+          "@babel/preset-typescript"
+        ]
+      }]
+    },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1"
+    },
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"]
   }
 }
