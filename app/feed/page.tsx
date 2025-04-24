@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, Calendar, Clock, MapPin, TrendingUp, Users } from "lucide-react";
+import { AlertCircle, Calendar, Clock, LogOut, MapPin, TrendingUp, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
+import { useRouter } from "next/navigation";
 
 type Team = {
   id: number;
@@ -51,6 +52,22 @@ export default function Feed() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const supabase = createClient();
+  const router = useRouter();
+
+  // Add signOut function
+  const handleSignOut = useCallback(async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Error signing out:", error);
+        return;
+      }
+      // Redirect to login page after successful sign out
+      router.push("/login");
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+    }
+  }, [supabase.auth, router]);
 
   useEffect(() => {
     async function fetchChannels() {
@@ -120,9 +137,23 @@ export default function Feed() {
   return (
     <div className="h-screen w-screen bg-[#232341] flex flex-col overflow-hidden">
       <div className="bg-[#232341] w-full">
-        {/* Header with SIDELINES text */}
-        <header className="py-4 text-center">
+        {/* Header with SIDELINES text and signout button */}
+        <header className="py-4 flex justify-between items-center px-4">
+          <div className="w-20">
+            {/* Empty div for layout balance */}
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-300">SIDELINES</h1>
+          <div className="w-20 flex justify-end">
+            <Button 
+              onClick={handleSignOut}
+              variant="ghost" 
+              size="icon"
+              className="text-gray-300 hover:text-white hover:bg-red-800"
+              title="Cerrar sesión"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
         </header>
 
         {/* Navigation buttons */}
