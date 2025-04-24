@@ -2,13 +2,13 @@
 
 import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { ChevronLeft, Send, Users } from "lucide-react";
+import { ChevronLeft, LogIn, Send, Users, X } from "lucide-react";
+import Chat from "@/components/Chat";
 
 type Message = {
   id: number;
@@ -94,6 +94,8 @@ export default function ChannelPage() {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeUsers, setActiveUsers] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
@@ -233,8 +235,8 @@ export default function ChannelPage() {
       const { data: user } = await supabase.auth.getUser();
       
       if (!user || !user.user) {
-        // Handle not logged in state
-        alert("Por favor inicia sesión para enviar mensajes");
+        // Show auth modal instead of alert
+        setShowAuthModal(true);
         return;
       }
 
@@ -254,7 +256,7 @@ export default function ChannelPage() {
   if (loading) {
     return (
       <div className="h-screen w-screen bg-[#232341] flex flex-col items-center justify-center text-white">
-        <div className="animate-pulse text-2xl">Cargando canal...</div>
+        <div className="animate-pulse text-2xl">Loading channel...</div>
       </div>
     );
   }
@@ -262,10 +264,10 @@ export default function ChannelPage() {
   if (!channel) {
     return (
       <div className="h-screen w-screen bg-[#232341] flex flex-col items-center justify-center text-white">
-        <div className="text-2xl mb-4">Canal no encontrado</div>
+        <div className="text-2xl mb-4">Channel not found</div>
         <Link href="/feed">
           <Button className="bg-white text-black font-bold rounded-full">
-            Volver a canales
+            Back to channels
           </Button>
         </Link>
       </div>
@@ -274,6 +276,45 @@ export default function ChannelPage() {
 
   return (
     <div className="h-screen w-screen bg-[#232341] flex flex-col overflow-hidden">
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1e2142] rounded-lg p-6 max-w-md w-full text-white relative">
+            <button 
+              onClick={() => setShowAuthModal(false)} 
+              className="absolute top-2 right-2 text-gray-400 hover:text-white"
+            >
+              <X size={20} />
+            </button>
+            
+            <div className="text-center mb-6">
+              <LogIn className="mx-auto h-12 w-12 text-blue-500 mb-4" />
+                <h2 className="text-xl font-bold mb-2">Sign in to participate</h2>
+                <p className="text-gray-300">
+                You need to sign in or create an account to send messages in this chat.
+                </p>
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                <Button 
+                onClick={() => router.push('/login')}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3"
+                >
+                Sign in
+                </Button>
+                
+                <Button 
+                onClick={() => router.push('/login?register=true')}
+                variant="outline"
+                className="w-full border-blue-600 text-blue-500 hover:bg-blue-900/20 font-bold py-3"
+                >
+                Create account
+                </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-[#1a1a33] p-4 shadow-md">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -361,74 +402,14 @@ export default function ChannelPage() {
         </div>
 
         {/* Chat column */}
-        <div className="w-full md:w-3/5 bg-[#1e2142] rounded-lg flex flex-col overflow-hidden">
-          {/* Messages area */}
-          <div className="flex-grow p-4 overflow-y-auto">
-            {messages.length > 0 ? (
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <MessageBubble key={message.id} message={message} />
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-400 h-full flex items-center justify-center">
-                Sé el primero en enviar un mensaje
-              </div>
-            )}
-          </div>
-
-          {/* Message input */}
-          <div className="p-4 bg-[#1a1a33]">
-            <form onSubmit={handleSendMessage} className="flex">
-              <Input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type Message"
-                className="flex-grow mr-2 bg-white text-black text-lg rounded-full p-6"
-              />
-              <Button 
-                type="submit" 
-                disabled={!newMessage.trim()}
-                className="bg-white text-black rounded-full hover:bg-gray-200 p-6"
-              >
-                <Send className="h-5 w-5" />
-              </Button>
-            </form>
-          </div>
+        <Chat
+          messages={messages}
+          newMessage={newMessage}
+          setNewMessage={setNewMessage}
+          handleSendMessage={handleSendMessage}
+        />
         </div>
       </div>
-    </div>
-  );
-}
-
-function MessageBubble({ message }: { message: Message }) {
-  return (
-    <div className="flex items-start">
-      <div 
-        className="w-8 h-8 rounded-full flex-shrink-0 mr-3 bg-blue-500 flex items-center justify-center text-white font-bold"
-      >
-        {message.user?.display_name?.charAt(0) || 
-          message.user?.username?.charAt(0) || 
-          'A'}
-      </div>
-      
-      <div className="flex-grow">
-        <div className="flex items-baseline">
-          <span className="font-bold text-white mr-2">
-            {message.user?.display_name || message.user?.username || 'Anónimo'}
-          </span>
-          <span className="text-xs text-gray-400">
-            {new Date(message.inserted_at).toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            })}
-          </span>
-        </div>
-        <p className="text-gray-200 break-words">{message.message}</p>
-      </div>
-    </div>
   );
 }
 
