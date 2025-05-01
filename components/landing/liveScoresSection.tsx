@@ -9,11 +9,24 @@ import {
     Game,
     GameStatus,
     GamesApiResponse,
-    MatchCardProps
+    MatchCardProps,
+    Team
 } from '@/types/nba-games';
+import TeamLogo from "@/components/TeamLogo";
+
+// Safe team object to prevent undefined errors
+const DEFAULT_TEAM: Team = {
+    id: 0,
+    name: 'Unknown',
+    abbr: 'UNK'
+};
 
 // Match card component
 function MatchCard({ status, time, teamOne, teamTwo, scoreOne, scoreTwo, action }: MatchCardProps) {
+    // Ensure we have valid team objects by using defaults if needed
+    const safeTeamOne = teamOne || DEFAULT_TEAM;
+    const safeTeamTwo = teamTwo || DEFAULT_TEAM;
+
     // Status badge styling
     const getBadgeVariant = (status: GameStatus): "destructive" | "secondary" | "outline" => {
         switch (status) {
@@ -44,15 +57,15 @@ function MatchCard({ status, time, teamOne, teamTwo, scoreOne, scoreTwo, action 
             <CardContent className="p-4">
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full mr-3 flex items-center justify-center">{teamOne.abbr}</div>
-                        <span className="font-medium">{teamOne.name}</span>
+                        <TeamLogo team={safeTeamOne} size={40} />
+                        <span className="font-medium ml-3">{safeTeamOne.name}</span>
                     </div>
                     <span className="text-xl font-bold">{scoreOne}</span>
                 </div>
                 <div className="flex justify-between items-center">
                     <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full mr-3 flex items-center justify-center">{teamTwo.abbr}</div>
-                        <span className="font-medium">{teamTwo.name}</span>
+                        <TeamLogo team={safeTeamTwo} size={40} />
+                        <span className="font-medium ml-3">{safeTeamTwo.name}</span>
                     </div>
                     <span className="text-xl font-bold">{scoreTwo}</span>
                 </div>
@@ -85,7 +98,13 @@ export default function LiveScoresSection() {
                 const result: GamesApiResponse = await response.json();
 
                 if (result.success) {
-                    setGames(result.data);
+                    // Validate each game to ensure all required properties exist
+                    const validatedGames = result.data.map(game => ({
+                        ...game,
+                        teamOne: game.teamOne || DEFAULT_TEAM,
+                        teamTwo: game.teamTwo || DEFAULT_TEAM,
+                    }));
+                    setGames(validatedGames);
                 } else {
                     throw new Error(result.error || 'Unknown error');
                 }
@@ -100,8 +119,8 @@ export default function LiveScoresSection() {
                         gameId: 'sample1',
                         status: 'LIVE',
                         time: 'Q4 2:45',
-                        teamOne: { id: 101, name: 'Lakers', abbr: 'LA' },
-                        teamTwo: { id: 102, name: 'Warriors', abbr: 'GS' },
+                        teamOne: { id: 1610612747, name: 'Lakers', abbr: 'LAL' },
+                        teamTwo: { id: 1610612744, name: 'Warriors', abbr: 'GSW' },
                         scoreOne: '102',
                         scoreTwo: '98',
                         venue: { arena: 'Crypto.com Arena', city: 'Los Angeles', state: 'CA', country: 'USA' },
@@ -116,8 +135,8 @@ export default function LiveScoresSection() {
                         gameId: 'sample2',
                         status: 'UPCOMING',
                         time: 'Today, 8:30 PM',
-                        teamOne: { id: 103, name: 'Nuggets', abbr: 'DEN' },
-                        teamTwo: { id: 104, name: 'Kings', abbr: 'SAC' },
+                        teamOne: { id: 1610612743, name: 'Nuggets', abbr: 'DEN' },
+                        teamTwo: { id: 1610612758, name: 'Kings', abbr: 'SAC' },
                         scoreOne: '-',
                         scoreTwo: '-',
                         venue: { arena: 'Ball Arena', city: 'Denver', state: 'CO', country: 'USA' },
@@ -132,8 +151,8 @@ export default function LiveScoresSection() {
                         gameId: 'sample3',
                         status: 'FINISHED',
                         time: 'FT',
-                        teamOne: { id: 105, name: 'Thunder', abbr: 'OKC' },
-                        teamTwo: { id: 106, name: 'Rockets', abbr: 'HOU' },
+                        teamOne: { id: 1610612760, name: 'Thunder', abbr: 'OKC' },
+                        teamTwo: { id: 1610612745, name: 'Rockets', abbr: 'HOU' },
                         scoreOne: '124',
                         scoreTwo: '122',
                         venue: { arena: 'Paycom Center', city: 'Oklahoma City', state: 'OK', country: 'USA' },
