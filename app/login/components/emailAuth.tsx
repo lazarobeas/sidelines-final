@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function EmailAuth(): React.JSX.Element {
+export default function EmailAuth(): React.ReactElement {
     const router = useRouter();
     const searchParams = useSearchParams();
     const supabase = createClient();

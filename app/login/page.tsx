@@ -2,16 +2,9 @@ import React from 'react';
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import EmailAuth from "@/app/login/components/emailAuth";
+import EmailAuth from "./components/emailAuth";
 
-// Correct way to type Next.js App Router page component props
-export default async function LoginPage({
-                                            params,
-                                            searchParams,
-                                        }: {
-    params: Record<string, never>;
-    searchParams: Record<string, string | string[] | undefined>;
-}): Promise<React.ReactNode> {
+export default async function LoginPage(): Promise<React.ReactNode> {
     // Creating connection to supabase server client
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
