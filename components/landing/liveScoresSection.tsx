@@ -13,6 +13,7 @@ import {
     Team
 } from '@/types/nba-games';
 import TeamLogo from "@/components/TeamLogo";
+import Link from 'next/link';
 
 // Safe team object to prevent undefined errors
 const DEFAULT_TEAM: Team = {
@@ -223,9 +224,11 @@ export default function LiveScoresSection() {
                         </div>
 
                         <div className="text-center mt-10">
-                            <Button className="bg-indigo-600 rounded-3xl border-black border-2 p-2 hover:bg-indigo-700 py-6 px-8 text-lg">
-                                View All Scores <ChevronRight className="ml-2 h-5 w-5" />
-                            </Button>
+                            <Link href="/feed">
+                                <Button className="bg-[#6A5BFF] rounded-3xl border-black border-2 p-2 hover:bg-[#5A4BFF] py-6 px-8 text-lg">
+                                    Live Feed <ChevronRight className="ml-2 h-5 w-5" />
+                                </Button>
+                            </Link>
                         </div>
                     </>
                 )}

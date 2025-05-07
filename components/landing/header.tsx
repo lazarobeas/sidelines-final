@@ -16,19 +16,6 @@ export default function Header() {
                         <span className="font-bold text-2xl text-white">SIDELINES</span>
                     </div>
 
-                    {/* Desktop Navigation */}
-                    <nav className="hidden md:flex space-x-8">
-                        <a href="/feed" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">Live Now</a>
-                        <a href="/feed" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">Feed</a>
-                        <a href="/upcoming" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">Upcoming</a>
-                        <a href="/about" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">About</a>
-                    </nav>
-
-                    {/* Sign Up Button (Desktop) */}
-                    <div className="hidden md:flex items-center">
-                        <Button className="ml-4 rounded-3xl border-black border-2 p-4 bg-white text-neutral-800 hover:text-indigo-600 font-medium">Sign Up</Button>
-                    </div>
-
                     {/* Mobile Menu Button */}
                     <div className="md:hidden">
                         <Button variant="ghost" onClick={() => setMobileMenuOpen(true)}>

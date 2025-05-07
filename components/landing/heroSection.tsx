@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import Image from "next/image";
+import Link from 'next/link'
 
 export default function HeroSection() {
     return (
@@ -15,21 +16,34 @@ export default function HeroSection() {
                             Real-time scores and live chat with sports fanatics - all in one place. Stay ahead of the game.
                         </p>
                         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                            <Link href="/login">
                             <Button className="rounded-3xl border-black border-2 p-2 bg-white text-indigo-600 hover:bg-gray-100 py-6 px-8 text-lg">
                                 Get Started
                             </Button>
-                            <Button variant="outline" className="rounded-3xl border-black border-2 p-2 text-white hover:bg-white/10 py-6 px-8 text-lg">
-                                Live Demo
-                            </Button>
+                            </Link>
                         </div>
                     </div>
                     <div className="md:w-1/2 flex justify-center">
                         <div className="relative w-full max-w-md">
-                            <div className="rounded-xl px-2 bg-white shadow-2xl overflow-hidden transform rotate-2">
-                                <Image src="/stadium-football-sports.jpg" alt='App Screenshot' className='w-full' width='50' height='50'/>
-                            </div>
-                            <div className="absolute -bottom-4 -left-4 rounded-xl bg-white shadow-xl overflow-hidden transform -rotate-3 w-5/6 hidden md:block">
-                                <Image src='/stadium-football-sports.jpg' alt='Second Screenshot' className='w-full' width='50' height='50'/>
+                        <div className="rounded-xl  bg-white shadow-2xl overflow-hidden transform rotate-2">
+                            <Image 
+                                src="/stadium-football-sports.jpg" 
+                                alt='App Screenshot' 
+                                className='w-full' 
+                                width={600} 
+                                height={400}
+                                quality={90}
+                            />
+                        </div>
+                        <div className="absolute -bottom-4 -left-4 rounded-xl bg-white shadow-xl overflow-hidden transform -rotate-3 w-5/6 hidden md:block">
+                                <Image 
+                                    src='/stadium-football-sports.jpg' 
+                                    alt='Second Screenshot' 
+                                    className='w-full h-full object-cover' 
+                                    width={500} 
+                                    height={350}
+                                    quality={90}
+                                />
                             </div>
                         </div>
                     </div>
