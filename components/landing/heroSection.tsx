@@ -2,6 +2,12 @@ import { Button } from '@/components/ui/button';
 import Image from "next/image";
 
 export default function HeroSection() {
+    const liveFeedActualWidth = 800;  // e.g., Check the real width of public/live-feed.png
+    const liveFeedActualHeight = 600; // e.g., Check the real height of public/live-feed.png
+
+    const stadiumActualWidth = 1200; // e.g., Check the real width of public/stadium-football-sports.jpg
+    const stadiumActualHeight = 800; // e.g., Check the real height of public/stadium-football-sports.jpg
+
     return (
         <section className="relative py-20 bg-main-blue overflow-hidden">
             <div className="absolute inset-0 opacity-10 bg-main-blue bg-repeat bg-center"></div>
@@ -25,11 +31,27 @@ export default function HeroSection() {
                     </div>
                     <div className="md:w-1/2 flex justify-center">
                         <div className="relative w-full max-w-md">
-                            <div className="rounded-xl px-2 bg-white shadow-2xl overflow-hidden transform rotate-2">
-                                <Image src="/live-feed.png" alt='App Screenshot' className='w-full' width='100' height='50'/>
+                            <div className="rounded-xl bg-white shadow-2xl content-stretch overflow-hidden transform rotate-2">
+                                <Image
+                                    src="/stadium-football-sports.jpg"
+                                    alt='App Screenshot'
+                                    width={liveFeedActualWidth}   // Use ACTUAL width
+                                    height={liveFeedActualHeight} // Use ACTUAL height
+                                    sizes="(min-width: 768px) 373px" // Approx 5/6 of 448px
+
+                                    className='w-full h-auto' // Let height scale automatically
+                                />
                             </div>
                             <div className="absolute -bottom-4 -left-4 rounded-xl bg-white shadow-xl overflow-hidden transform -rotate-3 w-5/6 hidden md:block">
-                                <Image src='/stadium-football-sports.jpg' alt='Second Screenshot' className='w-full' width='50' height='50'/>
+                                <Image
+                                    src='/live-feed.png'
+                                    alt='Second Screenshot'
+                                    width={stadiumActualWidth}   // Use ACTUAL width
+                                    height={stadiumActualHeight} // Use ACTUAL height
+                                    // Only visible >= md. Parent max-w-md (448px), image is w-5/6
+                                    sizes="(min-width: 768px) 373px" // Approx 5/6 of 448px
+                                    className='w-full h-auto' // Let height scale automatically
+                                />
                             </div>
                         </div>
                     </div>
