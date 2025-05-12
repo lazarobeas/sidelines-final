@@ -21,6 +21,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "lucide-react": "^0.479.0",
     "next": "^15.2.3",
     "react": "^19.0.0",
@@ -55,18 +56,30 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.(ts|tsx)$": ["babel-jest", {
-        "presets": [
-          ["@babel/preset-env", {"targets": {"node": "current"}}],
-          "@babel/preset-react",
-          "@babel/preset-typescript"
-        ]
-      }]
+      "^.+\\.(ts|tsx)$": [
+        "babel-jest",
+        {
+          "presets": [
+            [
+              "@babel/preset-env",
+              {
+                "targets": {
+                  "node": "current"
+                }
+              }
+            ],
+            "@babel/preset-react",
+            "@babel/preset-typescript"
+          ]
+        }
+      ]
     },
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/$1"
     },
     "testEnvironment": "jsdom",
-    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"]
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ]
   }
 }

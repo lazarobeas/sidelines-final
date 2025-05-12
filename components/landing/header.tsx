@@ -20,8 +20,8 @@ export default function Header() {
                     <nav className="hidden md:flex space-x-8">
                         <a href="/feed" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">Live Now</a>
                         <a href="/feed" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">Feed</a>
-                        <a href="/upcoming" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">Upcoming</a>
-                        <a href="/about" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">About</a>
+                        {/*<a href="/upcoming" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">Upcoming</a>*/}
+                        {/*<a href="/about" className="rounded-3xl border-black border-2 p-2 bg-white text-neutral-800 hover:text-indigo-600 font-medium">About</a>*/}
                     </nav>
 
                     {/* Sign Up Button (Desktop) */}

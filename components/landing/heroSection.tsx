@@ -26,7 +26,7 @@ export default function HeroSection() {
                     <div className="md:w-1/2 flex justify-center">
                         <div className="relative w-full max-w-md">
                             <div className="rounded-xl px-2 bg-white shadow-2xl overflow-hidden transform rotate-2">
-                                <Image src="/stadium-football-sports.jpg" alt='App Screenshot' className='w-full' width='50' height='50'/>
+                                <Image src="/live-feed.png" alt='App Screenshot' className='w-full' width='100' height='50'/>
                             </div>
                             <div className="absolute -bottom-4 -left-4 rounded-xl bg-white shadow-xl overflow-hidden transform -rotate-3 w-5/6 hidden md:block">
                                 <Image src='/stadium-football-sports.jpg' alt='Second Screenshot' className='w-full' width='50' height='50'/>

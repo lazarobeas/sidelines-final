@@ -1,6 +1,4 @@
 'use client';
-
-import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +11,7 @@ import {
     Team
 } from '@/types/nba-games';
 import TeamLogo from "@/components/TeamLogo";
+import {formatGameTimeDisplay} from "@/utils/formatGameTimeDisplay";
 
 // Safe team object to prevent undefined errors
 const DEFAULT_TEAM: Team = {
@@ -22,7 +21,7 @@ const DEFAULT_TEAM: Team = {
 };
 
 // Match card component
-function MatchCard({ status, time, teamOne, teamTwo, scoreOne, scoreTwo, action }: MatchCardProps) {
+function MatchCard({ status, time, date, teamOne, teamTwo, scoreOne, scoreTwo, action }: MatchCardProps) {
     // Ensure we have valid team objects by using defaults if needed
     const safeTeamOne = teamOne || DEFAULT_TEAM;
     const safeTeamTwo = teamTwo || DEFAULT_TEAM;
@@ -41,18 +40,22 @@ function MatchCard({ status, time, teamOne, teamTwo, scoreOne, scoreTwo, action 
         }
     };
 
+    const displayTime = formatGameTimeDisplay(status, date, time);
+
+
     return (
         <Card className="hover:shadow-lg transition-shadow">
             <CardHeader className="bg-gray-50 px-4 py-2 flex justify-between items-center">
                 <div className="flex items-center space-x-2">
                     <Badge variant={getBadgeVariant(status)}>
+
                         {status === 'LIVE' && (
                             <span className="h-2 w-2 rounded-full bg-red-500 mr-1 animate-pulse" />
                         )}
                         {status}
                     </Badge>
                 </div>
-                <span className="text-sm text-gray-500 font-medium">{time}</span>
+                <span className="text-sm text-gray-500 font-medium">{displayTime}</span>
             </CardHeader>
             <CardContent className="p-4">
                 <div className="flex justify-between items-center mb-4">
@@ -103,6 +106,14 @@ export default function LiveScoresSection() {
                         ...game,
                         teamOne: game.teamOne || DEFAULT_TEAM,
                         teamTwo: game.teamTwo || DEFAULT_TEAM,
+                        // Ensure scores are strings, handle potential null/undefined if needed
+                        scoreOne: game.scoreOne?.toString() ?? '-',
+                        scoreTwo: game.scoreTwo?.toString() ?? '-',
+                        action: game.status === 'LIVE' ? 'View Live' :
+                            game.status === 'UPCOMING' ? '' : // Hide button for upcoming
+                                game.status === 'FINISHED' ? 'Match Stats' : 'View Details',
+                        date: game.date, // Ensure date is included
+                        time: game.time // Ensure time is included
                     }));
                     setGames(validatedGames);
                 } else {
@@ -175,7 +186,7 @@ export default function LiveScoresSection() {
     const displayGames = games.map(game => ({
         ...game,
         action: game.status === 'LIVE' ? 'View Live' :
-            game.status === 'UPCOMING' ? 'Set Reminder' : 'Match Stats'
+            game.status === 'UPCOMING' ? '' : 'Match Stats'
     }));
 
     return (
@@ -208,6 +219,7 @@ export default function LiveScoresSection() {
                                         key={game.id}
                                         status={game.status}
                                         time={game.time}
+                                        date={game.date}
                                         teamOne={game.teamOne}
                                         teamTwo={game.teamTwo}
                                         scoreOne={game.scoreOne}
@@ -222,11 +234,11 @@ export default function LiveScoresSection() {
                             )}
                         </div>
 
-                        <div className="text-center mt-10">
-                            <Button className="bg-indigo-600 rounded-3xl border-black border-2 p-2 hover:bg-indigo-700 py-6 px-8 text-lg">
-                                View All Scores <ChevronRight className="ml-2 h-5 w-5" />
-                            </Button>
-                        </div>
+                        {/*<div className="text-center mt-10">*/}
+                        {/*    <Button className="bg-indigo-600 rounded-3xl border-black border-2 p-2 hover:bg-indigo-700 py-6 px-8 text-lg">*/}
+                        {/*        View All Scores <ChevronRight className="ml-2 h-5 w-5" />*/}
+                        {/*    </Button>*/}
+                        {/*</div>*/}
                     </>
                 )}
             </div>

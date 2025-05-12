@@ -76,6 +76,7 @@ export interface GamesApiResponse {
 export interface MatchCardProps {
     status: GameStatus;
     time: string;
+    date: string;
     teamOne: Team;
     teamTwo: Team;
     scoreOne: string;
