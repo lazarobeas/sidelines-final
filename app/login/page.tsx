@@ -16,13 +16,13 @@ export default async function LoginPage(): Promise<React.ReactNode> {
 
     // HTML for whenever we use this function
     return (
-        <div className="min-h-screen flex items-center justify-center px-6 relative z-50">
-            <Card className="w-full max-w-md relative z-50">
+        <div className="min-h-screen flex items-center justify-center px-6 relative z-50 bg-[#232341]">
+            <Card className="w-full max-w-md relative z-50 bg-[#1e1e45]/90 backdrop-blur-sm rounded-xl border border-white/10 text-white">
                 <CardHeader className="text-center space-y-3">
-                    <CardTitle className="text-3xl font-bold tracking-tight">
+                    <CardTitle className="text-3xl font-bold tracking-tight text-white">
                         Join Sideliness
                     </CardTitle>
-                    <CardDescription className="text-base text-gray-600">
+                    <CardDescription className="text-base text-gray-300">
                         Sign in to become part of the growing sports community!
                     </CardDescription>
                 </CardHeader>

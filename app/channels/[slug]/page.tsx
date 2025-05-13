@@ -94,6 +94,7 @@ export default function ChannelPage() {
   const [loading, setLoading] = useState(true);
   const [activeUsers, setActiveUsers] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showGameCompletedModal, setShowGameCompletedModal] = useState(false); // Nueva variable de estado
   const [activeMobileTab, setActiveMobileTab] = useState<'chat' | 'highlights'>('chat');
   const router = useRouter();
   const supabase = createClient();
@@ -185,6 +186,13 @@ export default function ChannelPage() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !channel) return;
+
+    // Verificar si el juego está completado
+    if (channel.game_status === "COMPLETED") {
+      setShowGameCompletedModal(true);
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -287,6 +295,28 @@ export default function ChannelPage() {
   return (
       <div className="h-screen w-screen bg-[#232341] flex flex-col overflow-hidden">
         {showAuthModal && ( <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"> <div className="bg-[#1e2142] rounded-lg p-6 max-w-md w-full text-white relative shadow-2xl border border-blue-900/50"> <button onClick={() => setShowAuthModal(false)} className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"> <X size={20} /> </button> <div className="text-center mb-6"> <LogIn className="mx-auto h-10 w-10 text-indigo-400 mb-3" /> <h2 className="text-xl font-semibold mb-1">Sign in to Chat</h2> <p className="text-sm text-gray-300"> Join the conversation by signing in or creating an account. </p> </div> <div className="flex flex-col gap-3"> <Button onClick={() => router.push('/login')} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-md"> Sign In </Button> <Button onClick={() => router.push('/login?register=true')} variant="outline" className="w-full border-indigo-500 text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 font-semibold py-2.5 rounded-md"> Create Account </Button> </div> </div> </div> )}
+        {/* Modal para juego completado */}
+        {showGameCompletedModal && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+            <div className="bg-[#1e2142] rounded-lg p-6 max-w-md w-full text-white relative shadow-2xl border border-blue-900/50">
+              <button onClick={() => setShowGameCompletedModal(false)} className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors">
+                <X size={20} />
+              </button>
+              <div className="text-center mb-6">
+                <MessageSquare className="mx-auto h-10 w-10 text-gray-400 mb-3" /> {/* Icono diferente o el mismo */}
+                <h2 className="text-xl font-semibold mb-1">Chat Closed</h2>
+                <p className="text-sm text-gray-300">
+                  This game has ended, and the chat is no longer active.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <Button onClick={() => setShowGameCompletedModal(false)} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-md">
+                  Got it
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         <header className="bg-[#1a1a33]/80 backdrop-blur-sm p-3 md:p-4 shadow-md flex-shrink-0 border-b border-blue-900/30 z-10"> <div className="max-w-7xl mx-auto flex justify-between items-center"> <div className="flex items-center min-w-0"> <Link href="/feed" className="mr-2 md:mr-3 text-gray-300 hover:text-white transition-colors"> <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" /> </Link> <div className="flex items-center overflow-hidden mr-2"> <div className="w-6 h-6 md:w-7 md:h-7 rounded-full mr-1.5 md:mr-2 flex-shrink-0 flex items-center justify-center p-0.5 border border-white/10" style={{ backgroundColor: `${channel.home_team.primary_color}4D` }} > <img src={channel.home_team.logo_url || "/team-placeholder.png"} alt={channel.home_team.name} className="w-full h-full object-contain"/> </div> <div className="text-xs sm:text-sm md:text-base text-white font-semibold truncate" title={`${channel.home_team.name} vs ${channel.away_team.name}`}> <span className="hidden sm:inline">{channel.home_team.name}</span> <span className="sm:hidden">{channel.home_team.name.substring(0,3).toUpperCase()}</span> <span className="mx-1">vs</span> <span className="hidden sm:inline">{channel.away_team.name}</span> <span className="sm:hidden">{channel.away_team.name.substring(0,3).toUpperCase()}</span> </div> <div className="w-6 h-6 md:w-7 md:h-7 rounded-full ml-1.5 md:ml-2 flex-shrink-0 flex items-center justify-center p-0.5 border border-white/10" style={{ backgroundColor: `${channel.away_team.primary_color}4D` }} > <img src={channel.away_team.logo_url || "/team-placeholder.png"} alt={channel.away_team.name} className="w-full h-full object-contain"/> </div> </div> </div> <div className="flex items-center flex-shrink-0"> <Badge className={`text-[10px] sm:text-xs px-2 py-0.5 md:px-2.5 md:py-1 mr-2 md:mr-3 rounded-full border border-transparent ${channel.game_status === "LIVE" ? "bg-red-500/90 text-white border-red-400/50" : channel.game_status === "UPCOMING" ? "bg-blue-500/90 text-white border-blue-400/50" : "bg-gray-500/90 text-white border-gray-400/50" } `}> {channel.game_status === "LIVE" && ( <span className="mr-1 relative flex h-1.5 w-1.5 md:h-2 md:w-2"> <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/75 opacity-75"></span> <span className="relative inline-flex rounded-full h-full w-full bg-white"></span> </span> )} {channel.game_status} </Badge> {channel.game_status !== "UPCOMING" && ( <div className="text-white font-bold text-xs sm:text-sm md:text-base mr-2 md:mr-3 hidden xs:block"> {channel.score_home}-{channel.score_away} </div> )} <div className="text-gray-300 flex items-center text-[10px] sm:text-xs md:text-sm"> <Users className="h-3 w-3 md:h-4 md:w-4 mr-1" /> <span>{activeUsers}</span> <span className="hidden xs:inline ml-0.5 md:ml-1">fans</span> </div> </div> </div> </header>
 
         <div className="md:hidden bg-[#1c1c3a] border-b border-blue-900/50 p-1.5 flex-shrink-0 sticky top-[var(--header-height,60px)] z-[5]"> {/* Adjust CSS var --header-height or value */}
