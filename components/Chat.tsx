@@ -51,9 +51,9 @@ export default function Chat({
             <div ref={messagesEndRef} />
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-400 h-full flex items-center justify-center">
-            Sé el primero en enviar un mensaje
-          </div>
+            <div className="text-center py-8 text-gray-400 h-full flex items-center justify-center">
+            Be the first to send a message
+            </div>
         )}
       </div>
 
