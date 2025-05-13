@@ -1,6 +1,6 @@
 // Imports necessary for component
 import React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
@@ -40,9 +40,9 @@ export default function Chat({
   }, [messages]);
 
   return (
-    <div className="w-full md:w-3/5 bg-[#1e2142] rounded-lg flex flex-col overflow-hidden">
+    <div className="w-full md:w-3/5 bg-[#1e2142] rounded-lg flex flex-col h-full overflow-hidden">
       {/* Messages area */}
-      <div className="flex-grow p-4 overflow-y-auto">
+        <div className="flex-grow p-4 overflow-y-auto min-h-0"> {/* Removed custom-scrollbar */}
         {messages.length > 0 ? (
           <div className="space-y-4">
             {messages.map((message) => (
