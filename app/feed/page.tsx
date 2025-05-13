@@ -2,12 +2,25 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { SupabaseClient } from "@supabase/supabase-js"; // Import from the original package
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { AlertCircle, LogOut, MapPin, Users, Search, BellRing } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// Assuming AlertDialog components are available, e.g., from shadcn/ui
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"; // Add this import
 
 type Team = {
   id: number;
@@ -227,7 +240,7 @@ export default function Feed() {
                 ))
             ) : filteredChannels.length > 0 ? (
                 filteredChannels.map((channel) => (
-                    <ChannelCard key={channel.id} channel={channel} />
+                    <ChannelCard key={channel.id} channel={channel} supabase={supabase} /> // Pass supabase client
                 ))
             ) : (
                 <div className="col-span-full flex flex-col items-center justify-center py-12 text-center bg-[#1e1e45]/50 backdrop-blur-sm rounded-xl p-8 text-white border border-white/10">
@@ -244,7 +257,13 @@ export default function Feed() {
   );
 }
 
-function ChannelCard({ channel }: { channel: Channel }) {
+function ChannelCard({ channel, supabase }: { channel: Channel; supabase: SupabaseClient }) { // Add supabase to props
+  const [reminderStatus, setReminderStatus] = useState<{ type: 'success' | 'error' | null; message: string | null }>({ type: null, message: null });
+  const [isSettingReminder, setIsSettingReminder] = useState(false); // Para deshabilitar botones mientras se procesa
+  useEffect(() => {
+    setReminderStatus({ type: null, message: null });
+    setIsSettingReminder(false);
+  }, [channel.id]);
   // Get status color, badge and animation
   const getStatusStyles = (status: string) => {
     switch (status) {
@@ -294,6 +313,69 @@ function ChannelCard({ channel }: { channel: Channel }) {
   // Default team colors if they don't exist
   const homeColor = channel.home_team.primary_color || '#6366F1';
   const awayColor = channel.away_team.primary_color || '#8B5CF6';
+
+  const handleSetReminder = async (minutes: number) => {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user || !user.id || !user.email) { // Asegúrate de tener el ID también
+      console.error("User not logged in or email not available for reminder.");
+      // Considera usar un componente de notificación/toast más amigable que alert
+      alert("Necesitas iniciar sesión y tener un email verificado para programar recordatorios.");
+      return;
+    }
+
+    const gameTime = new Date(channel.game_date);
+    const reminderTime = new Date(gameTime.getTime() - minutes * 60000); // Calcula la hora del recordatorio
+    const reminderTimeUTC = reminderTime.toISOString(); // Convierte a UTC para Supabase (timestamptz)
+
+    // Verifica si la hora del recordatorio ya pasó
+    if (reminderTime <= new Date()) {
+         alert(`No se puede programar un recordatorio para una hora que ya pasó (se intentó programar para ${reminderTime.toLocaleTimeString()}).`);
+         return;
+    }
+
+
+    // Mensaje que se guardará en la base de datos (la Función Edge lo usará después)
+    const reminderMessage = `Recordatorio para ${channel.home_team.name} vs ${channel.away_team.name} que empieza ${gameTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+    try {
+       console.log('Intentando guardar recordatorio:', {
+           user_id: user.id,
+           email: user.email,
+           reminder_time: reminderTimeUTC,
+           message: reminderMessage,
+           status: 'pending'
+       });
+
+      // --- INICIO DE LA LÓGICA DE INSERCIÓN EN SUPABASE ---
+      const { data, error } = await supabase
+        .from('reminders') // ¡Asegúrate que esta tabla exista por el SQL anterior!
+        .insert({
+          user_id: user.id,          // ID del usuario
+          email: user.email,         // Email del usuario
+          reminder_time: reminderTimeUTC, // Hora del recordatorio en UTC
+          message: reminderMessage,  // Mensaje descriptivo
+          status: 'pending'        // Estado inicial
+        });
+
+      if (error) {
+         console.error("Error al guardar el recordatorio en Supabase:", error);
+        // Podrías revisar errores específicos, como RLS (error.code === '42501')
+        throw new Error(error.message || 'No se pudo guardar el recordatorio.');
+      }
+      // --- FIN DE LA LÓGICA DE INSERCIÓN EN SUPABASE ---
+
+       console.log("Recordatorio guardado con éxito en DB:", data);
+      // Feedback al usuario (mejor usar Toasts)
+      // alert(
+      //   `✅ ¡Recordatorio Programado!\n\nSe enviará un email a: ${user.email}\n${minutes} minutos antes del juego: ${channel.home_team.name} vs ${channel.away_team.name}.\nHora del recordatorio (aprox): ${reminderTime.toLocaleString([], {dateStyle: 'short', timeStyle: 'short'})}`
+      // );
+
+    } catch (error: any) {
+      console.error("Error en handleSetReminder:", error);
+      alert(`❌ Error al programar el recordatorio: ${error.message}`);
+    }
+  }; // Fin de handleSetReminder
 
   return (
       <div className={`bg-[#1e1e45]/70 backdrop-blur-sm rounded-xl overflow-hidden text-white border border-white/5 hover:border-white/20 transition-all ${statusStyles.shadow} hover:shadow-lg hover:translate-y-[-2px]`}>
@@ -402,12 +484,49 @@ function ChannelCard({ channel }: { channel: Channel }) {
           </div>
 
           {/* Action button */}
-          <Link href={`/channels/${channel.slug}`} className="w-full block mt-5">
-            <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-all">
-              {channel.game_status === "LIVE" ? "JOIN LIVE CHAT" :
-                  channel.game_status === "UPCOMING" ? "SET REMINDER" : "VIEW RECAP"}
-            </Button>
-          </Link>
+          <div className="mt-5">
+            {channel.game_status === "UPCOMING" ? (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-all">
+                    SET REMINDER
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-[#1e1e45] border-indigo-500/50 text-white">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-indigo-300">Set Reminder For</AlertDialogTitle>
+                    <AlertDialogDescription className="text-gray-300">
+                      {channel.home_team.name} vs {channel.away_team.name}
+                      <br />
+                      <span className="text-sm text-gray-400">
+                        Starts: {new Date(channel.game_date).toLocaleString([], {dateStyle: 'medium', timeStyle: 'short' })}
+                      </span>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <div className="flex flex-col space-y-2 py-4">
+                    {[1, 5, 15, 30].map((min) => (
+                      <AlertDialogAction
+                        key={min}
+                        className="w-full justify-start bg-indigo-500/80 hover:bg-indigo-600 border-0 text-white"
+                        onClick={() => handleSetReminder(min)}
+                      >
+                        Remind me {min} minute{min > 1 ? 's' : ''} before
+                      </AlertDialogAction>
+                    ))}
+                  </div>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="w-full bg-gray-600 hover:bg-gray-700 border-0 text-white sm:mt-0 mt-2">Cancel</AlertDialogCancel>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            ) : (
+              <Link href={`/channels/${channel.slug}`} className="w-full block">
+                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-all">
+                  {channel.game_status === "LIVE" ? "JOIN LIVE CHAT" : "VIEW RECAP"}
+                </Button>
+              </Link>
+            )}
+          </div>
 
           {/* Game details */}
           <div className="flex justify-between text-xs text-gray-400 mt-4 pt-3 border-t border-gray-700/50">
