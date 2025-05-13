@@ -58,7 +58,7 @@ export default function Header() {
                             {/* <a href="/upcoming" className="text-lg font-medium hover:text-indigo-300" onClick={() => setMobileMenuOpen(false)}>Upcoming</a> */}
                             {/* <a href="/about" className="text-lg font-medium hover:text-indigo-300" onClick={() => setMobileMenuOpen(false)}>About</a> */}
                             <Link href="/login" passHref>
-                                <Button asChild className="mt-4 bg-white text-main-blue hover:bg-gray-200 w-full max-w-xs font-semibold">
+                                <Button asChild className="mt-4 bg-purple-600 text-white hover:bg-purple-700 w-full max-w-xs font-semibold">
                                     <a>Sign Up</a>
                                 </Button>
                             </Link>
