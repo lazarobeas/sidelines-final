@@ -367,9 +367,9 @@ function ChannelCard({ channel, supabase }: { channel: Channel; supabase: Supaba
 
        console.log("Recordatorio guardado con éxito en DB:", data);
       // Feedback al usuario (mejor usar Toasts)
-      // alert(
-      //   `✅ ¡Recordatorio Programado!\n\nSe enviará un email a: ${user.email}\n${minutes} minutos antes del juego: ${channel.home_team.name} vs ${channel.away_team.name}.\nHora del recordatorio (aprox): ${reminderTime.toLocaleString([], {dateStyle: 'short', timeStyle: 'short'})}`
-      // );
+      alert(
+        `✅ Reminder Set!\n\nAn email will be sent to: ${user.email}\n${minutes} minutes before the game: ${channel.home_team.name} vs ${channel.away_team.name}.\nReminder time (approx): ${reminderTime.toLocaleString([], {dateStyle: 'short', timeStyle: 'short'})}`
+      );
 
     } catch (error: any) {
       console.error("Error en handleSetReminder:", error);
