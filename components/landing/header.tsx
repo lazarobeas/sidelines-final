@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link'; // Import Link
 
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,12 +27,16 @@ export default function Header() {
 
                     {/* Sign Up Button (Desktop) */}
                     <div className="hidden md:flex items-center">
-                        <Button className="ml-4 rounded-3xl border-black border-2 p-4 bg-white text-neutral-800 hover:text-indigo-600 font-medium">Sign Up</Button>
+                        <Link href="/login" passHref>
+                            <Button asChild className="ml-4 rounded-3xl border-black border-2 p-4 bg-white text-neutral-800 hover:text-indigo-600 font-medium">
+                                <a>Sign Up</a>
+                            </Button>
+                        </Link>
                     </div>
 
                     {/* Mobile Menu Button */}
                     <div className="md:hidden">
-                        <Button variant="ghost" onClick={() => setMobileMenuOpen(true)}>
+                        <Button variant="ghost" onClick={() => setMobileMenuOpen(true)} className="text-white hover:bg-white/10">
                             <Menu className="h-6 w-6" />
                         </Button>
                     </div>
@@ -40,19 +45,23 @@ export default function Header() {
 
             {/* Mobile Menu */}
             {mobileMenuOpen && (
-                <div className="fixed inset-0 z-50 bg-white md:hidden">
+                <div className="fixed inset-0 z-50 bg-main-blue text-white md:hidden">
                     <div className="flex justify-end p-4">
-                        <Button variant="ghost" onClick={() => setMobileMenuOpen(false)}>
+                        <Button variant="ghost" onClick={() => setMobileMenuOpen(false)} className="text-white hover:bg-white/10">
                             <X className="h-6 w-6" />
                         </Button>
                     </div>
                     <div className="px-6 pt-2 pb-8">
-                        <div className="flex flex-col space-y-6">
-                            <a href="/feed" className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>Live Now</a>
-                            <a href="/feed" className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>Feed</a>
-                            <a href="/upcoming" className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>Upcoming</a>
-                            <a href="/about" className="text-lg font-medium" onClick={() => setMobileMenuOpen(false)}>About</a>
-                            <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 w-full">Sign Up</Button>
+                        <div className="flex flex-col space-y-6 items-center">
+                            <a href="/feed" className="text-lg font-medium hover:text-indigo-300" onClick={() => setMobileMenuOpen(false)}>Live Now</a>
+                            <a href="/feed" className="text-lg font-medium hover:text-indigo-300" onClick={() => setMobileMenuOpen(false)}>Feed</a>
+                            {/* <a href="/upcoming" className="text-lg font-medium hover:text-indigo-300" onClick={() => setMobileMenuOpen(false)}>Upcoming</a> */}
+                            {/* <a href="/about" className="text-lg font-medium hover:text-indigo-300" onClick={() => setMobileMenuOpen(false)}>About</a> */}
+                            <Link href="/login" passHref>
+                                <Button asChild className="mt-4 bg-white text-main-blue hover:bg-gray-200 w-full max-w-xs font-semibold">
+                                    <a>Sign Up</a>
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
